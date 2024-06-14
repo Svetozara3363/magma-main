@@ -4,7 +4,7 @@ function ImageList() {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
-        fetch('http://your-backend-url/pictures', {
+        fetch('http://dokalab.com/pictures', {
             headers: {
                 'Session-ID': getCookie('session_id')
             }
@@ -22,7 +22,7 @@ function ImageList() {
         <div>
             {images.map(image => (
                 <div key={image.id}>
-                    <img src={`http://your-backend-url/picture/${image.id}`} alt={image.filename} />
+                    <img src={`http://dokalab.com/picture/${image.id}`} alt={image.filename} />
                     <button onClick={() => deleteImage(image.id)}>Delete</button>
                 </div>
             ))}
@@ -31,7 +31,7 @@ function ImageList() {
 }
 
 function deleteImage(imageId) {
-    fetch(`http://your-backend-url/delete_picture/${imageId}`, {
+    fetch(`http://dokalab.com/delete_picture/${imageId}`, {
         method: 'DELETE',
         headers: {
             'Session-ID': getCookie('session_id')
