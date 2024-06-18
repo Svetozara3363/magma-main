@@ -22,8 +22,8 @@ function App() {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      uploadImage(selectedFile);
       setFile(selectedFile);
+      uploadImage(selectedFile);
     }
   };
 
@@ -48,7 +48,8 @@ function App() {
         setFlag(true);
         fetchImages();  // Refresh the list of images after upload
       } else {
-        console.error("Failed to upload the image: ");
+        const errorText = await response.text();
+        console.error("Failed to upload the image: ", errorText);
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
@@ -66,7 +67,8 @@ function App() {
         const data = await response.json();
         setImages(data);
       } else {
-        console.error("Failed to fetch images: ");
+        const errorText = await response.text();
+        console.error("Failed to fetch images: ", errorText);
       }
     } catch (error) {
       console.error("Error fetching images: ", error);
@@ -84,7 +86,8 @@ function App() {
       if (response.ok) {
         fetchImages();  // Refresh the list of images after deletion
       } else {
-        console.error("Failed to delete the image: ");
+        const errorText = await response.text();
+        console.error("Failed to delete the image: ", errorText);
       }
     } catch (error) {
       console.error("Error deleting image: ", error);
@@ -119,12 +122,12 @@ function App() {
         ) : (
           <div className="successful-upload">
             <div className="logo">
-              <img src={checkmark} />
+              <img src={checkmark} alt="success" />
             </div>
             <h2>Your image has been successfully uploaded</h2>
             <button className="back-btn" onClick={handleBackClick}>
               <span>Back</span>
-              <img src={back} />
+              <img src={back} alt="back" />
             </button>
           </div>
         )}
