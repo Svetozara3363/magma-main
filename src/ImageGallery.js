@@ -59,7 +59,7 @@ const ImageGallery = () => {
       <div>
         {image ? (
           <div>
-            <img src={`http://dokalab.com/picture`} alt="Uploaded" />
+            <img src={`https://dokalab.com/picture`} alt="Uploaded" />
             <button onClick={handleDelete}>Delete</button>
           </div>
         ) : (

@@ -6,7 +6,7 @@ function UploadForm() {
         const formData = new FormData();
         formData.append('picture', event.target.picture.files[0]);
 
-        fetch('http://dokalab.com/upload', {
+        fetch('https://dokalab.com/upload', {
             method: 'POST',
             body: formData,
             headers: {

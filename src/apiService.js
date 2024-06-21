@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://dokalab.com';
+const API_URL = 'https://dokalab.com';
 
 export const uploadImage = async (imageData) => {
   try {

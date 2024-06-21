@@ -1,4 +1,4 @@
-const API_URL = "http://dokalab.com/api";
+const API_URL = "https://dokalab.com/api";
 export { API_URL };
 
 
