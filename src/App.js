@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
-import { API_URL } from "./env";
 import Background from "./Components/background/background";
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [flag, setFlag] = useState(false);
   const [file, setFile] = useState(null);
-  const [images, setImages] = useState([]);
-
-  useEffect(() => {
-    if (!document.cookie.includes('session_id')) {
-      document.cookie = `session_id=${uuidv4()}; path=/`;
-    }
-    fetchImages();
-  }, []);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -37,7 +28,7 @@ function App() {
     formData.append("picture", file);
 
     try {
-      const response = await fetch(`${API_URL}/upload`, {
+      const response = await fetch(`/api/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -46,48 +37,12 @@ function App() {
       });
       if (response.ok) {
         setFlag(true);
-        fetchImages();  // Refresh the list of images after upload
+        window.location.href = "/pictures"; // Перенаправление на страницу с изображением после успешной загрузки
       } else {
-        console.error("Failed to upload the image: ");
+        console.error("Failed to upload the image.");
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
-    }
-  };
-
-  const fetchImages = async () => {
-    try {
-      const response = await fetch(`${API_URL}/pictures`, {
-        headers: {
-          'Session-ID': getCookie('session_id')
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setImages(data);
-      } else {
-        console.error("Failed to fetch images: ");
-      }
-    } catch (error) {
-      console.error("Error fetching images: ", error);
-    }
-  };
-
-  const deleteImage = async (imageId) => {
-    try {
-      const response = await fetch(`${API_URL}/delete_picture/${imageId}`, {
-        method: "DELETE",
-        headers: {
-          'Session-ID': getCookie('session_id')
-        }
-      });
-      if (response.ok) {
-        fetchImages();  // Refresh the list of images after deletion
-      } else {
-        console.error("Failed to delete the image: ");
-      }
-    } catch (error) {
-      console.error("Error deleting image: ", error);
     }
   };
 
@@ -128,14 +83,6 @@ function App() {
             </button>
           </div>
         )}
-      </div>
-      <div className="image-list">
-        {images.map(image => (
-          <div key={image.id}>
-            <img src={`${API_URL}/picture/${image.id}`} alt={image.filename} />
-            <button onClick={() => deleteImage(image.id)}>Delete</button>
-          </div>
-        ))}
       </div>
     </div>
   );
