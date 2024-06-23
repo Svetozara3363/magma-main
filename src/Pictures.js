@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "./Pictures.css";
 
 function Pictures() {
-  const [image, setImage] = useState(null);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const imageUrl = queryParams.get("imageUrl");
+  
+  const [image, setImage] = useState(imageUrl || null);
 
   useEffect(() => {
-    fetchImage();
-  }, []);
+    if (!imageUrl) {
+      fetchImage();
+    }
+  }, [imageUrl]);
 
   const fetchImage = async () => {
     try {
