@@ -15,7 +15,6 @@ function App() {
     if (selectedFile) {
       uploadImage(selectedFile);
       setFile(selectedFile);
-      setFlag(true);  // Установить флаг в true после загрузки изображения
     }
   };
 
@@ -37,7 +36,9 @@ function App() {
         }
       });
       if (response.ok) {
-        // Успешная загрузка
+        const data = await response.json();
+        setFlag(true);
+        window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
       } else {
         console.error("Failed to upload the image.");
       }
@@ -103,7 +104,7 @@ function Pictures() {
     <div className="Pictures">
       <h2>Your uploaded image</h2>
       {imageUrl ? (
-        <img src={`https://dokalab.com/api/pictures`} alt="Uploaded" className="uploaded-image" />
+        <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
       ) : (
         <p>No image uploaded.</p>
       )}
