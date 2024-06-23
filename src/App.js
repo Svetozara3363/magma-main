@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
@@ -15,7 +15,7 @@ function App() {
     if (selectedFile) {
       uploadImage(selectedFile);
       setFile(selectedFile);
-      setFlag(true);  // Устанавливаем флаг в true после загрузки
+      setFlag(true);
     }
   };
 
@@ -38,7 +38,7 @@ function App() {
         });
         if (response.ok) {
             const data = await response.json();
-            // Дополнительные действия после успешной загрузки, если необходимо
+            console.log("Image uploaded successfully:", data);
         } else {
             console.error("Failed to upload the image.");
         }
@@ -96,9 +96,14 @@ function getCookie(name) {
 }
 
 function Pictures() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const imageUrl = queryParams.get("imageUrl");
+  const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    fetch("https://dokalab.com/api/pictures")
+      .then(response => response.json())
+      .then(data => setImageUrl(data.imageUrl))
+      .catch(error => console.error("Error fetching image:", error));
+  }, []);
 
   return (
     <div className="Pictures">
