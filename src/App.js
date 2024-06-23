@@ -4,7 +4,7 @@ import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 function App() {
   const [flag, setFlag] = useState(false);
@@ -28,21 +28,21 @@ function App() {
     formData.append("picture", file);
 
     try {
-        const response = await fetch(`https://dokalab.com/api/upload`, {
-            method: "POST",
-            body: formData,
-            headers: {
-                'Session-ID': getCookie('session_id')
-            }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
-        } else {
-            console.error("Failed to upload the image.");
+      const response = await fetch(`https://dokalab.com/api/upload`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          'Session-ID': getCookie('session_id')
         }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
+      } else {
+        console.error("Failed to upload the image.");
+      }
     } catch (error) {
-        console.error("Error uploading image: ", error);
+      console.error("Error uploading image: ", error);
     }
   };
 
