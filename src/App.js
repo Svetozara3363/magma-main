@@ -36,9 +36,7 @@ function App() {
         }
       });
       if (response.ok) {
-        const data = await response.json();
         setFlag(true);
-        window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
       } else {
         console.error("Failed to upload the image.");
       }
