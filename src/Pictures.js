@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import "./Pictures.css";
 
 function Pictures() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const imageUrl = queryParams.get("imageUrl");
-  
-  const [image, setImage] = useState(imageUrl || null);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
-    if (!imageUrl) {
-      fetchImage();
-    }
-  }, [imageUrl]);
+    fetchImage();
+  }, []);
 
   const fetchImage = async () => {
     try {
@@ -35,9 +28,8 @@ function Pictures() {
 
   return (
     <div className="Pictures">
-      <h2>Your uploaded image</h2>
       {image ? (
-        <img src={image} alt="Uploaded" className="uploaded-image" />
+        <img src={image} alt="Uploaded" />
       ) : (
         <p>No image uploaded yet.</p>
       )}
