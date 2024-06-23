@@ -15,6 +15,7 @@ function App() {
     if (selectedFile) {
       uploadImage(selectedFile);
       setFile(selectedFile);
+      setFlag(true);  // Устанавливаем флаг в true после загрузки
     }
   };
 
@@ -28,21 +29,21 @@ function App() {
     formData.append("picture", file);
 
     try {
-      const response = await fetch(`https://dokalab.com/api/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Session-ID': getCookie('session_id')
+        const response = await fetch(`https://dokalab.com/api/upload`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Session-ID': getCookie('session_id')
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            // Дополнительные действия после успешной загрузки, если необходимо
+        } else {
+            console.error("Failed to upload the image.");
         }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
-      } else {
-        console.error("Failed to upload the image.");
-      }
     } catch (error) {
-      console.error("Error uploading image: ", error);
+        console.error("Error uploading image: ", error);
     }
   };
 
