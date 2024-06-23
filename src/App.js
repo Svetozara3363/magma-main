@@ -4,23 +4,11 @@ import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { v4 as uuidv4 } from 'uuid';
-
-const API_URL = 'https://dokalab.com/api';
-const WS_URL = 'wss://dokalab.com/ws';
+import { BrowserRouter as Router, Route, Switch, useLocation } from "react-router-dom";
 
 function App() {
   const [flag, setFlag] = useState(false);
   const [file, setFile] = useState(null);
-
-  // Обработка WebSocket
-  const ws = new WebSocket(WS_URL);
-  ws.onopen = () => {
-    console.log('WebSocket connection opened');
-  };
-  ws.onmessage = (event) => {
-    console.log('Received:', event.data);
-  };
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -40,7 +28,7 @@ function App() {
     formData.append("picture", file);
 
     try {
-        const response = await fetch(`${API_URL}/upload`, {
+        const response = await fetch(`https://dokalab.com/api/upload`, {
             method: "POST",
             body: formData,
             headers: {
@@ -48,8 +36,8 @@ function App() {
             }
         });
         if (response.ok) {
-            setFlag(true);
-            window.location.href = "/pictures"; // Перенаправление на страницу с изображением после успешной загрузки
+            const data = await response.json();
+            window.location.href = `/pictures?imageUrl=${encodeURIComponent(data.imageUrl)}`;
         } else {
             console.error("Failed to upload the image.");
         }
@@ -86,12 +74,12 @@ function App() {
         ) : (
           <div className="successful-upload">
             <div className="logo">
-              <img src={checkmark} alt="Checkmark" />
+              <img src={checkmark} alt="checkmark" />
             </div>
             <h2>Your image has been successfully uploaded</h2>
             <button className="back-btn" onClick={handleBackClick}>
               <span>Back</span>
-              <img src={back} alt="Back" />
+              <img src={back} alt="back" />
             </button>
           </div>
         )}
@@ -106,4 +94,32 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-export default App;
+function Pictures() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const imageUrl = queryParams.get("imageUrl");
+
+  return (
+    <div className="Pictures">
+      <h2>Your uploaded image</h2>
+      {imageUrl ? (
+        <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
+      ) : (
+        <p>No image uploaded.</p>
+      )}
+    </div>
+  );
+}
+
+function Main() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" exact component={App} />
+        <Route path="/pictures" component={Pictures} />
+      </Switch>
+    </Router>
+  );
+}
+
+export default Main;

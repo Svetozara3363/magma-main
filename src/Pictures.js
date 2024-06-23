@@ -28,8 +28,9 @@ function Pictures() {
 
   return (
     <div className="Pictures">
+      <h2>Your uploaded image</h2>
       {image ? (
-        <img src={image} alt="Uploaded" />
+        <img src={image} alt="Uploaded" className="uploaded-image" />
       ) : (
         <p>No image uploaded yet.</p>
       )}
