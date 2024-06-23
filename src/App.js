@@ -4,7 +4,7 @@ import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Route, Switch, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const [flag, setFlag] = useState(false);
@@ -114,10 +114,10 @@ function Pictures() {
 function Main() {
   return (
     <Router>
-      <Switch>
-        <Route path="/" exact component={App} />
-        <Route path="/pictures" component={Pictures} />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/pictures" element={<Pictures />} />
+      </Routes>
     </Router>
   );
 }
