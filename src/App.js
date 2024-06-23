@@ -6,9 +6,21 @@ import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
 import { v4 as uuidv4 } from 'uuid';
 
+const API_URL = 'https://dokalab.com/api';
+const WS_URL = 'wss://dokalab.com/ws';
+
 function App() {
   const [flag, setFlag] = useState(false);
   const [file, setFile] = useState(null);
+
+  // Обработка WebSocket
+  const ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    console.log('WebSocket connection opened');
+  };
+  ws.onmessage = (event) => {
+    console.log('Received:', event.data);
+  };
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -28,21 +40,21 @@ function App() {
     formData.append("picture", file);
 
     try {
-      const response = await fetch(`/api/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Session-ID': getCookie('session_id')
+        const response = await fetch(`${API_URL}/upload`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Session-ID': getCookie('session_id')
+            }
+        });
+        if (response.ok) {
+            setFlag(true);
+            window.location.href = "/pictures"; // Перенаправление на страницу с изображением после успешной загрузки
+        } else {
+            console.error("Failed to upload the image.");
         }
-      });
-      if (response.ok) {
-        setFlag(true);
-        window.location.href = "/pictures"; // Перенаправление на страницу с изображением после успешной загрузки
-      } else {
-        console.error("Failed to upload the image.");
-      }
     } catch (error) {
-      console.error("Error uploading image: ", error);
+        console.error("Error uploading image: ", error);
     }
   };
 
@@ -74,12 +86,12 @@ function App() {
         ) : (
           <div className="successful-upload">
             <div className="logo">
-              <img src={checkmark} />
+              <img src={checkmark} alt="Checkmark" />
             </div>
             <h2>Your image has been successfully uploaded</h2>
             <button className="back-btn" onClick={handleBackClick}>
               <span>Back</span>
-              <img src={back} />
+              <img src={back} alt="Back" />
             </button>
           </div>
         )}
