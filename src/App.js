@@ -13,6 +13,7 @@ function App() {
     if (selectedFile) {
       const imageUrl = await uploadImage(selectedFile);
       if (imageUrl) {
+        console.log("Image uploaded, navigating to /pictures");
         navigate("/pictures");
       }
       setFile(selectedFile);
