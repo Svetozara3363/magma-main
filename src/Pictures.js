@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
 import "./Pictures.css";
 
 function Pictures() {
   const [image, setImage] = useState(null);
+  const location = useLocation();
+  console.log(location.pathname);
 
   useEffect(() => {
     fetchImage();

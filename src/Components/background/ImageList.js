@@ -40,7 +40,6 @@ function deleteImage(imageId) {
     .then(response => response.text())
     .then(result => {
         console.log('Image deleted:', result);
-        // Обновите интерфейс соответственно
     });
 }
 
