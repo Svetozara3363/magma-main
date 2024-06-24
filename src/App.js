@@ -1,12 +1,10 @@
-// App.js
-
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
   const [file, setFile] = useState(null);
