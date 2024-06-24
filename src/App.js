@@ -1,10 +1,8 @@
-// App.js
-
 import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -15,7 +13,7 @@ function App() {
     if (selectedFile) {
       const imageUrl = await uploadImage(selectedFile);
       if (imageUrl) {
-        navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
+        navigate("/pictures");
       }
       setFile(selectedFile);
     }
@@ -26,12 +24,9 @@ function App() {
     formData.append("picture", file);
 
     try {
-        const response = await fetch(`https://dokalab.com/api/upload`, {
+        const response = await fetch(`/api/upload`, {
             method: "POST",
             body: formData,
-            headers: {
-                'Session-ID': getCookie('session_id')
-            }
         });
         if (response.ok) {
             const data = await response.json();
@@ -74,25 +69,11 @@ function App() {
   );
 }
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 function Pictures() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const imageUrl = queryParams.get("imageUrl");
-
   return (
     <div className="Pictures">
       <h2>Your uploaded image</h2>
-      {imageUrl ? (
-        <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
-      ) : (
-        <p>No image uploaded.</p>
-      )}
+      <img src="/uploads/uploaded_image.jpg" alt="Uploaded" className="uploaded-image" />
     </div>
   );
 }
