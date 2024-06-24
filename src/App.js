@@ -1,26 +1,26 @@
+// App.js
+
 import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
-  const [flag, setFlag] = useState(false);
   const [file, setFile] = useState(null);
+  const navigate = useNavigate();
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      uploadImage(selectedFile);
+      const imageUrl = await uploadImage(selectedFile);
+      if (imageUrl) {
+        navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
+      }
       setFile(selectedFile);
     }
-  };
-
-  const handleBackClick = () => {
-    setFlag(false);
-    setFile(null);
   };
 
   const uploadImage = async (file) => {
@@ -28,60 +28,49 @@ function App() {
     formData.append("picture", file);
 
     try {
-      const response = await fetch(`https://dokalab.com/api/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Session-ID': getCookie('session_id')
+        const response = await fetch(`https://dokalab.com/api/upload`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Session-ID': getCookie('session_id')
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            return data.imageUrl;
+        } else {
+            console.error("Failed to upload the image.");
         }
-      });
-      if (response.ok) {
-        setFlag(true);
-      } else {
-        console.error("Failed to upload the image.");
-      }
     } catch (error) {
-      console.error("Error uploading image: ", error);
+        console.error("Error uploading image: ", error);
     }
+    return null;
   };
 
   return (
     <div className="App">
       <Background />
-      <div className={`container ${flag ? "uploaded" : ""}`}>
-        {!flag ? (
-          <div className="upload-image">
-            <h2 className="form-title">
-              Click on the button below to upload your image
-            </h2>
-            <div className="form-container">
-              <form method="post">
-                <label htmlFor="file-upload" className="custom-file-upload">
-                  <span>Add your image</span>
-                  <img src={image} alt="icon-upload" />
-                </label>
-                <input
-                  type="file"
-                  id="file-upload"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </form>
-            </div>
+      <div className="container">
+        <div className="upload-image">
+          <h2 className="form-title">
+            Click on the button below to upload your image
+          </h2>
+          <div className="form-container">
+            <form method="post">
+              <label htmlFor="file-upload" className="custom-file-upload">
+                <span>Add your image</span>
+                <img src={image} alt="icon-upload" />
+              </label>
+              <input
+                type="file"
+                id="file-upload"
+                name="image"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </form>
           </div>
-        ) : (
-          <div className="successful-upload">
-            <div className="logo">
-              <img src={checkmark} alt="checkmark" />
-            </div>
-            <h2>Your image has been successfully uploaded</h2>
-            <button className="back-btn" onClick={handleBackClick}>
-              <span>Back</span>
-              <img src={back} alt="back" />
-            </button>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
