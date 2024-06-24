@@ -25,18 +25,18 @@ function App() {
     formData.append("picture", file);
 
     try {
-        const response = await fetch(`/api/upload`, {
-            method: "POST",
-            body: formData,
-        });
-        if (response.ok) {
-            const data = await response.json();
-            return data.imageUrl;
-        } else {
-            console.error("Failed to upload the image.");
-        }
+      const response = await fetch(`/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.imageUrl;
+      } else {
+        console.error("Failed to upload the image.");
+      }
     } catch (error) {
-        console.error("Error uploading image: ", error);
+      console.error("Error uploading image: ", error);
     }
     return null;
   };
