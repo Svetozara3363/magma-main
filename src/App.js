@@ -25,18 +25,18 @@ function App() {
     formData.append("picture", file);
 
     try {
-        const response = await fetch(`/api/upload`, {
-            method: "POST",
-            body: formData,
-        });
-        if (response.ok) {
-            const data = await response.json();
-            return data.imageUrl;
-        } else {
-            console.error("Failed to upload the image.");
-        }
+      const response = await fetch(`/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.imageUrl;
+      } else {
+        console.error("Failed to upload the image.");
+      }
     } catch (error) {
-        console.error("Error uploading image: ", error);
+      console.error("Error uploading image: ", error);
     }
     return null;
   };
@@ -71,10 +71,36 @@ function App() {
 }
 
 function Pictures() {
+  const [imageUrl, setImageUrl] = useState("/uploads/uploaded_image.jpg");
+  const [error, setError] = useState(null);
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/pictures`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setImageUrl(null);
+      } else {
+        setError("Failed to delete the image.");
+      }
+    } catch (error) {
+      setError("Error deleting image: " + error.message);
+    }
+  };
+
   return (
     <div className="Pictures">
       <h2>Your uploaded image</h2>
-      <img src="/uploads/uploaded_image.jpg" alt="Uploaded" className="uploaded-image" />
+      {imageUrl ? (
+        <>
+          <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
+          <button onClick={handleDelete}>Delete Image</button>
+        </>
+      ) : (
+        <p>No image uploaded.</p>
+      )}
+      {error && <p style={{color: 'red'}}>{error}</p>}
     </div>
   );
 }
