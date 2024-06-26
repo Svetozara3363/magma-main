@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -13,8 +13,7 @@ function App() {
     if (selectedFile) {
       const imageUrl = await uploadImage(selectedFile);
       if (imageUrl) {
-        console.log("Image uploaded, navigating to /pictures");
-        navigate("/pictures");
+        navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
       }
       setFile(selectedFile);
     }
@@ -25,9 +24,12 @@ function App() {
     formData.append("picture", file);
 
     try {
-      const response = await fetch(`/api/upload`, {
+      const response = await fetch(`https://dokalab.com/api/upload`, {
         method: "POST",
         body: formData,
+        headers: {
+          'Session-ID': getCookie('session_id')
+        }
       });
       if (response.ok) {
         const data = await response.json();
@@ -70,37 +72,25 @@ function App() {
   );
 }
 
-function Pictures() {
-  const [imageUrl, setImageUrl] = useState("/uploads/uploaded_image.jpg");
-  const [error, setError] = useState(null);
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`/api/pictures`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setImageUrl(null);
-      } else {
-        setError("Failed to delete the image.");
-      }
-    } catch (error) {
-      setError("Error deleting image: " + error.message);
-    }
-  };
+function Pictures() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const imageUrl = queryParams.get("imageUrl");
 
   return (
     <div className="Pictures">
       <h2>Your uploaded image</h2>
       {imageUrl ? (
-        <>
-          <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
-          <button onClick={handleDelete}>Delete Image</button>
-        </>
+        <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
       ) : (
         <p>No image uploaded.</p>
       )}
-      {error && <p style={{color: 'red'}}>{error}</p>}
     </div>
   );
 }
