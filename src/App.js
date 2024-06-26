@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import Background from "./Components/background/background";
@@ -11,9 +11,9 @@ function App() {
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      const imageUrl = await uploadImage(selectedFile);
-      if (imageUrl) {
-        navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
+      const success = await uploadImage(selectedFile);
+      if (success) {
+        navigate(`/pictures`);
       }
       setFile(selectedFile);
     }
@@ -33,14 +33,14 @@ function App() {
       });
       if (response.ok) {
         const data = await response.json();
-        return data.imageUrl;
+        return true;
       } else {
         console.error("Failed to upload the image.");
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
     }
-    return null;
+    return false;
   };
 
   return (
@@ -79,9 +79,29 @@ function getCookie(name) {
 }
 
 function Pictures() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const imageUrl = queryParams.get("imageUrl");
+  const [imageData, setImageData] = useState(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await fetch("https://dokalab.com/api/pictures", {
+          headers: {
+            'Session-ID': getCookie('session_id')
+          }
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          const imageObjectURL = URL.createObjectURL(blob);
+          setImageData(imageObjectURL);
+        } else {
+          console.error("Failed to fetch the image.");
+        }
+      } catch (error) {
+        console.error("Error fetching image: ", error);
+      }
+    };
+    fetchImage();
+  }, []);
 
   const deleteImage = async () => {
     try {
@@ -106,9 +126,9 @@ function Pictures() {
   return (
     <div className="Pictures">
       <h2>Your uploaded image</h2>
-      {imageUrl ? (
+      {imageData ? (
         <div>
-          <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
+          <img src={imageData} alt="Uploaded" className="uploaded-image" />
           <button onClick={deleteImage}>Delete Image</button>
         </div>
       ) : (
