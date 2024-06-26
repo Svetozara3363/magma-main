@@ -83,11 +83,34 @@ function Pictures() {
   const queryParams = new URLSearchParams(location.search);
   const imageUrl = queryParams.get("imageUrl");
 
+  const deleteImage = async () => {
+    try {
+      const response = await fetch(`https://dokalab.com/api/pictures`, {
+        method: "DELETE",
+        headers: {
+          'Session-ID': getCookie('session_id')
+        }
+      });
+      if (response.ok) {
+        console.log("Image deleted successfully");
+        // Перейти на главную страницу после удаления
+        window.location.href = "/";
+      } else {
+        console.error("Failed to delete the image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image: ", error);
+    }
+  };
+
   return (
     <div className="Pictures">
       <h2>Your uploaded image</h2>
       {imageUrl ? (
-        <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
+        <div>
+          <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
+          <button onClick={deleteImage}>Delete Image</button>
+        </div>
       ) : (
         <p>No image uploaded.</p>
       )}
