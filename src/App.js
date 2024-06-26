@@ -36,7 +36,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch(`${API_URL}/api/upload`, {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -52,7 +52,7 @@ function App() {
 
   const fetchImage = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/picture`);
+      const response = await fetch(`${API_URL}/picture`);
       if (response.ok) {
         const blob = await response.blob();
         setUploadedImage(URL.createObjectURL(blob));
@@ -66,7 +66,7 @@ function App() {
 
   const deleteImage = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/picture`, {
+      const response = await fetch(`${API_URL}/picture`, {
         method: "DELETE",
       });
       if (response.ok) {
