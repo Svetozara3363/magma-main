@@ -6,13 +6,15 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from
 
 function App() {
   const [file, setFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      const success = await uploadImage(selectedFile);
-      if (success) {
+      const imageUrl = await uploadImage(selectedFile);
+      if (imageUrl) {
+        setImageUrl(imageUrl);
         navigate(`/pictures`);
       }
       setFile(selectedFile);
@@ -27,21 +29,53 @@ function App() {
       const response = await fetch(`https://dokalab.com/api/upload`, {
         method: "POST",
         body: formData,
-        headers: {
-          'Session-ID': getCookie('session_id')
-        }
       });
       if (response.ok) {
         const data = await response.json();
-        return true;
+        return data.imageUrl;
       } else {
         console.error("Failed to upload the image.");
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
     }
-    return false;
+    return null;
   };
+
+  const fetchImage = async () => {
+    try {
+      const response = await fetch(`https://dokalab.com/api/pictures`);
+      if (response.ok) {
+        const imageBlob = await response.blob();
+        const imageObjectUrl = URL.createObjectURL(imageBlob);
+        setImageUrl(imageObjectUrl);
+      } else {
+        console.error("Failed to fetch the image.");
+      }
+    } catch (error) {
+      console.error("Error fetching image: ", error);
+    }
+  };
+
+  const deleteImage = async () => {
+    try {
+      const response = await fetch(`https://dokalab.com/api/pictures`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setImageUrl(null);
+        navigate(`/`);
+      } else {
+        console.error("Failed to delete the image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchImage();
+  }, []);
 
   return (
     <div className="App">
@@ -68,71 +102,12 @@ function App() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-function Pictures() {
-  const [imageData, setImageData] = useState(null);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const response = await fetch("https://dokalab.com/api/pictures", {
-          headers: {
-            'Session-ID': getCookie('session_id')
-          }
-        });
-        if (response.ok) {
-          const blob = await response.blob();
-          const imageObjectURL = URL.createObjectURL(blob);
-          setImageData(imageObjectURL);
-        } else {
-          console.error("Failed to fetch the image.");
-        }
-      } catch (error) {
-        console.error("Error fetching image: ", error);
-      }
-    };
-    fetchImage();
-  }, []);
-
-  const deleteImage = async () => {
-    try {
-      const response = await fetch(`https://dokalab.com/api/pictures`, {
-        method: "DELETE",
-        headers: {
-          'Session-ID': getCookie('session_id')
-        }
-      });
-      if (response.ok) {
-        console.log("Image deleted successfully");
-        // Перейти на главную страницу после удаления
-        window.location.href = "/";
-      } else {
-        console.error("Failed to delete the image.");
-      }
-    } catch (error) {
-      console.error("Error deleting image: ", error);
-    }
-  };
-
-  return (
-    <div className="Pictures">
-      <h2>Your uploaded image</h2>
-      {imageData ? (
-        <div>
-          <img src={imageData} alt="Uploaded" className="uploaded-image" />
+      {imageUrl && (
+        <div className="Pictures">
+          <h2>Your uploaded image</h2>
+          <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
           <button onClick={deleteImage}>Delete Image</button>
         </div>
-      ) : (
-        <p>No image uploaded.</p>
       )}
     </div>
   );
@@ -143,7 +118,7 @@ function Main() {
     <Router>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/pictures" element={<Pictures />} />
+        <Route path="/pictures" element={<App />} />
       </Routes>
     </Router>
   );
