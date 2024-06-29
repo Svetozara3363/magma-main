@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
-import checkmark from "./images/eva_checkmark-outline.svg";
-import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
@@ -35,6 +33,7 @@ function App() {
       });
 
       const textResponse = await response.text();
+      console.log("Server response:", textResponse); // Логируем ответ сервера
       if (response.ok) {
         try {
           const data = JSON.parse(textResponse);
