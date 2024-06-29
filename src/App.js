@@ -33,12 +33,17 @@ function App() {
           'Session-ID': getCookie('session_id')
         }
       });
-      if (response.ok) {
-        const data = await response.json();
-        return data.imageUrl;
-      } else {
-        const errorData = await response.json(); // Fetch the error response
-        console.error("Failed to upload the image. Server response:", errorData);
+
+      const textResponse = await response.text();
+      try {
+        const data = JSON.parse(textResponse);
+        if (response.ok) {
+          return data.imageUrl;
+        } else {
+          console.error("Failed to upload the image. Server response:", data);
+        }
+      } catch (error) {
+        console.error("Failed to parse response as JSON. Server response:", textResponse);
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
@@ -52,12 +57,12 @@ function App() {
       <div className="container">
         <div className="upload-image">
           <h2 className="form-title">
-            Click on the button below to upload your image
+            Нажмите на кнопку ниже, чтобы загрузить ваше изображение
           </h2>
           <div className="form-container">
             <form method="post" encType="multipart/form-data">
               <label htmlFor="file-upload" className="custom-file-upload">
-                <span>Add your image</span>
+                <span>Добавить изображение</span>
                 <img src={image} alt="icon-upload" />
               </label>
               <input
@@ -88,11 +93,11 @@ function Pictures() {
 
   return (
     <div className="Pictures">
-      <h2>Your uploaded image</h2>
+      <h2>Ваше загруженное изображение</h2>
       {imageUrl ? (
         <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
       ) : (
-        <p>No image uploaded.</p>
+        <p>Изображение не загружено.</p>
       )}
     </div>
   );
