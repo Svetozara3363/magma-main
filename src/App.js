@@ -35,15 +35,16 @@ function App() {
       });
 
       const textResponse = await response.text();
-      try {
-        const data = JSON.parse(textResponse);
-        if (response.ok) {
+      if (response.ok) {
+        try {
+          const data = JSON.parse(textResponse);
           return data.imageUrl;
-        } else {
-          console.error("Failed to upload the image. Server response:", data);
+        } catch (error) {
+          console.error("Failed to parse response as JSON. Server response:", textResponse);
+          return textResponse; // Вернем текстовый ответ, если это не JSON
         }
-      } catch (error) {
-        console.error("Failed to parse response as JSON. Server response:", textResponse);
+      } else {
+        console.error("Failed to upload the image. Server response:", textResponse);
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
