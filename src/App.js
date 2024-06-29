@@ -4,7 +4,7 @@ import image from "./images/mynaui_download.svg";
 import checkmark from "./images/eva_checkmark-outline.svg";
 import back from "./images/lets-icons_refund-back.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom"; // Added useLocation import
 
 function App() {
   const [file, setFile] = useState(null);
@@ -23,7 +23,7 @@ function App() {
 
   const uploadImage = async (file) => {
     const formData = new FormData();
-    formData.append("file", file); // Ensure the form field name matches the server expectation
+    formData.append("file", file); // Ensure the field name matches the server expectations
 
     try {
         const response = await fetch(`https://dokalab.com/api/upload`, {
