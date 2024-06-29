@@ -43,7 +43,8 @@ function App() {
       if (response.ok) {
         setFlag(true);
       } else {
-        console.error("Failed to upload the image: ");
+        const errorText = await response.text();
+        console.error("Failed to upload the image: ", errorText);
       }
     } catch (error) {
       console.error("Error uploading image: ", error);
@@ -52,12 +53,13 @@ function App() {
 
   const fetchImage = async () => {
     try {
-      const response = await fetch(`${API_URL}/picture`);
+      const response = await fetch(`${API_URL}/pictures`);
       if (response.ok) {
         const blob = await response.blob();
         setUploadedImage(URL.createObjectURL(blob));
       } else {
-        console.error("Failed to fetch the image: ");
+        const errorText = await response.text();
+        console.error("Failed to fetch the image: ", errorText);
       }
     } catch (error) {
       console.error("Error fetching image: ", error);
@@ -66,14 +68,15 @@ function App() {
 
   const deleteImage = async () => {
     try {
-      const response = await fetch(`${API_URL}/picture`, {
+      const response = await fetch(`${API_URL}/delete`, {
         method: "DELETE",
       });
       if (response.ok) {
         setUploadedImage(null);
         setFlag(false);
       } else {
-        console.error("Failed to delete the image: ");
+        const errorText = await response.text();
+        console.error("Failed to delete the image: ", errorText);
       }
     } catch (error) {
       console.error("Error deleting image: ", error);
