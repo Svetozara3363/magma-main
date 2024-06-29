@@ -33,14 +33,14 @@ function App() {
       });
 
       const textResponse = await response.text();
-      console.log("Server response:", textResponse); // Логируем ответ сервера
+      console.log("Server response:", textResponse); // Log the server response
       if (response.ok) {
         try {
           const data = JSON.parse(textResponse);
           return data.imageUrl;
         } catch (error) {
           console.error("Failed to parse response as JSON. Server response:", textResponse);
-          return textResponse; // Вернем текстовый ответ, если это не JSON
+          return textResponse; // Return text response if it's not JSON
         }
       } else {
         console.error("Failed to upload the image. Server response:", textResponse);
@@ -57,12 +57,12 @@ function App() {
       <div className="container">
         <div className="upload-image">
           <h2 className="form-title">
-            Нажмите на кнопку ниже, чтобы загрузить ваше изображение
+            Click the button below to upload your image
           </h2>
           <div className="form-container">
             <form method="post" encType="multipart/form-data">
               <label htmlFor="file-upload" className="custom-file-upload">
-                <span>Добавить изображение</span>
+                <span>Add your image</span>
                 <img src={image} alt="icon-upload" />
               </label>
               <input
@@ -93,11 +93,11 @@ function Pictures() {
 
   return (
     <div className="Pictures">
-      <h2>Ваше загруженное изображение</h2>
+      <h2>Your uploaded image</h2>
       {imageUrl ? (
         <img src={imageUrl} alt="Uploaded" className="uploaded-image" />
       ) : (
-        <p>Изображение не загружено.</p>
+        <p>No image uploaded.</p>
       )}
     </div>
   );
