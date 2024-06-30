@@ -24,7 +24,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch(`https://dokalab.com/api/upload`, {
+      const response = await fetch(`https://dokalab.com/upload`, {
         method: "POST",
         body: formData,
         headers: {
