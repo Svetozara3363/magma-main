@@ -1,8 +1,14 @@
-import React, { useState } from "react";
 import "./App.css";
 import image from "./images/mynaui_download.svg";
 import Background from "./Components/background/background";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import { uploadImage } from "./apiService";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -11,44 +17,19 @@ function App() {
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      const imageUrl = await uploadImage(selectedFile);
-      if (imageUrl) {
-        navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
-      }
-      setFile(selectedFile);
-    }
-  };
-
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(`https://dokalab.com/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Session-ID': getCookie('session_id')
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      try {
+        const response = await uploadImage(formData);
+        if (response.imageUrl) {
+          navigate(`/pictures?imageUrl=${encodeURIComponent(imageUrl)}`);
         }
-      });
 
-      const textResponse = await response.text();
-      console.log("Server response:", textResponse); // Log the server response
-      if (response.ok) {
-        try {
-          const data = JSON.parse(textResponse);
-          return data.imageUrl;
-        } catch (error) {
-          console.error("Failed to parse response as JSON. Server response:", textResponse);
-          return textResponse; // Return text response if it's not JSON
-        }
-      } else {
-        console.error("Failed to upload the image. Server response:", textResponse);
+        setFile(selectedFile);
+      } catch (error) {
+        console.error("Error uploading image : ", error);
       }
-    } catch (error) {
-      console.error("Error uploading image: ", error);
     }
-    return null;
   };
 
   return (
@@ -78,12 +59,6 @@ function App() {
       </div>
     </div>
   );
-}
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
 function Pictures() {
